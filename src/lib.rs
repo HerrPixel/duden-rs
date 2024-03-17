@@ -22,6 +22,11 @@ While the library is good, the documentation is lacking a bit, therefore here ar
 
 */
 
+pub async fn get_wort(wort: &str) -> Result<Wort, String> {
+    let doc = fetch_document_for_wort(wort).await?;
+
+    Err("lol".to_string())
+}
 async fn fetch_document_for_wort(wort: &str) -> Result<Document, String> {
     let url = format!("https://www.duden.de/rechtschreibung/{}", wort);
 
