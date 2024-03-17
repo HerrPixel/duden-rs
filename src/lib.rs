@@ -22,21 +22,21 @@ While the library is good, the documentation is lacking a bit, therefore here ar
 
 */
 
-fn get_wort(doc: &Document) -> Result<String, String> {
+fn get_wort_from_document(doc: &Document) -> Result<String, String> {
     let meta_tag_predicate = Name("meta").and(Attr("property", "og:title"));
 
-    let wort_node = match doc.find(meta_tag_predicate).next() {
-        Some(node) => node,
-        None => return Err("Could not find Wort: meta tag \"og:title\" not found".to_string()),
-    };
+    let wort_node =
+        match doc.find(meta_tag_predicate).next() {
+            Some(node) => node,
+            None => return Err(
+                "Scraping error while searching for Wort meta tag: meta tag \"og:title\" not found"
+                    .to_string(),
+            ),
+        };
 
     let wort = match wort_node.attr("content") {
         Some(value) => value,
-        None => {
-            return Err(
-                "Could not find Wort: meta tag does not have attribute \"content\"".to_string(),
-            )
-        }
+        None => return Err("Scraping error while searching for Wort attribute on meta tag: meta tag does not have attribute \"content\"".to_string()),
     };
 
     Ok(wort.to_string())
