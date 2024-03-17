@@ -3,6 +3,15 @@ use select::{
     predicate::{Attr, Name, Predicate},
 };
 
+pub struct Wort {
+    wort: String,
+    bedeutungen: Vec<Bedeutung>,
+}
+pub struct Bedeutung {
+    bedeutung: String,
+    beispiele: Vec<String>,
+}
+
 /*
 
 A little note about select:
