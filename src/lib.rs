@@ -22,6 +22,26 @@ While the library is good, the documentation is lacking a bit, therefore here ar
 
 */
 
+async fn fetch_document_for_wort(wort: &str) -> Result<Document, String> {
+    let url = format!("https://www.duden.de/rechtschreibung/{}", wort);
+
+    let fetched_html_response = match reqwest::get(url).await {
+        Ok(response) => response,
+        Err(e) => return Err(format!("Reqwest error while fetching site: {}", e)),
+    };
+
+    let fetched_html = match fetched_html_response.text().await {
+        Ok(text) => text,
+        Err(e) => {
+            return Err(format!(
+                "Reqwest error while fetching text from site: {}",
+                e
+            ))
+        }
+    };
+
+    Ok(Document::from(fetched_html.as_str()))
+}
 fn get_wort_from_document(doc: &Document) -> Result<String, String> {
     let meta_tag_predicate = Name("meta").and(Attr("property", "og:title"));
 
