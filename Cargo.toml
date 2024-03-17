@@ -3,8 +3,17 @@ name = "duden-rs"
 version = "0.1.0"
 edition = "2021"
 
+[lib]
+name = "duden_rs_lib"
+path = "src/lib.rs"
+
+[[bin]]
+name = "duden_rs_bin"
+path = "src/main.rs"
+
 [dependencies]
-html5ever = "0.26.0"
-regex = "1.10.3"
-reqwest = { version = "0.11.26", default-features = false, features = ["rustls-tls"] }
-scraper = "0.19.0"
+reqwest = { version = "0.11.26", default-features = false, features = [
+    "rustls-tls",
+] }
+select = "0.6.0"
+tokio = { version = "1.36.0", features = ["full"] }
