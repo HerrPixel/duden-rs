@@ -1,4 +1,5 @@
 use core::fmt;
+use std::iter;
 
 use select::{
     document::Document,
@@ -46,10 +47,30 @@ pub async fn get_wort_des_tages() -> Result<Wort, String> {
     get_wort(&wort).await
 }
 
+/// Get a Wort together with its Bedeutungen and Beispiele from Duden.de.
+/// The argument `wort` should be the name as it would be written in the Duden URL.
 pub async fn get_wort(wort: &str) -> Result<Wort, String> {
     let doc = fetch_document_for_wort(wort).await?;
 
-    Err("lol".to_string())
+    let wort = get_wort_from_document(&doc)?;
+
+    let bedeutungs_node = get_bedeutungs_node_from_document(&doc)?;
+
+    let bedeutungen = get_bedeutungen_from_node(&bedeutungs_node)?;
+
+    let beispiele = get_beispiele_from_node(&bedeutungs_node)?;
+
+    Ok(Wort {
+        wort,
+        bedeutungen: bedeutungen
+            .into_iter()
+            .zip(beispiele.into_iter().chain(iter::repeat(vec![])))
+            .map(|(bedeutung, beispiele)| Bedeutung {
+                bedeutung,
+                beispiele,
+            })
+            .collect::<Vec<_>>(),
+    })
 }
 
 async fn get_wort_des_tages_link_name() -> Result<String, String> {
