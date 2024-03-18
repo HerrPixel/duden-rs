@@ -7,10 +7,13 @@ use select::{
     predicate::{Any, Attr, Child, Class, Descendant, Name, Not, Predicate},
 };
 
+/// A single Wort together with a list of Bedeutungen and matching Beispiele.
 pub struct Wort {
     wort: String,
     bedeutungen: Vec<Bedeutung>,
 }
+
+/// A single Bedeutung for a Wort. May have a list of Beispiele.
 pub struct Bedeutung {
     bedeutung: String,
     beispiele: Vec<String>,
@@ -26,21 +29,13 @@ impl fmt::Display for Wort {
             for beispiel in &bedeutung.beispiele {
                 writeln!(f, "        {}", beispiel)?;
             }
+            writeln!(f)?;
         }
         Ok(())
     }
 }
 
-/*
-
-A little note about select:
-
-While the library is good, the documentation is lacking a bit, therefore here are some ressources:
-- How to use select for almost all use cases: https://proxiesapi.com/articles/the-ultimate-select-rs-cheat-sheet-for-rust
-- Official docs just in case: https://docs.rs/select/latest/select/index.html
-
-*/
-
+/// Get the Duden Wort-des-Tages together with its Bedeutungen and Beispiele from https://www.duden.de/wort-des-tages
 pub async fn get_wort_des_tages() -> Result<Wort, String> {
     let wort = get_wort_des_tages_link_name().await?;
 
@@ -73,6 +68,7 @@ pub async fn get_wort(wort: &str) -> Result<Wort, String> {
     })
 }
 
+/// Get the Wort as it would appear in the link to its page in the Duden URL.
 async fn get_wort_des_tages_link_name() -> Result<String, String> {
     let url = "https://www.duden.de/wort-des-tages";
 
@@ -131,6 +127,7 @@ async fn get_wort_des_tages_link_name() -> Result<String, String> {
     Ok(link_name.to_string())
 }
 
+/// Get the corresponding document for a given Wort using the reqwest crate.
 async fn fetch_document_for_wort(wort: &str) -> Result<Document, String> {
     let url = format!("https://www.duden.de/rechtschreibung/{}", wort);
 
@@ -152,6 +149,8 @@ async fn fetch_document_for_wort(wort: &str) -> Result<Document, String> {
     Ok(Document::from(fetched_html.as_str()))
 }
 
+/// The correct spelling of a word can be found in a `meta` tag with `property=og:title`.
+/// The argument `doc` should be the whole site document for a specific word from duden.de/rechtschreibung/{wort}.
 fn get_wort_from_document(doc: &Document) -> Result<String, String> {
     let meta_tag_predicate = Name("meta").and(Attr("property", "og:title"));
 
