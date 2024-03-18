@@ -150,3 +150,24 @@ fn get_wort_from_document(doc: &Document) -> Result<String, String> {
 
     Ok(wort.to_string())
 }
+
+/// The bedeutungen and beispiele are always contained in a `div` element with `id=bedeutung` or `div=bedeutungen`.
+/// This function returns that node.
+fn get_bedeutungs_node_from_document(doc: &Document) -> Result<Node, String> {
+    let bedeutungs_node_predicate = Name("div").and(Attr("id", "bedeutung"));
+
+    let mut bedeutungs_node = doc.find(bedeutungs_node_predicate).next();
+
+    // depending on the number of "beispiele", the id could be singular or plural,
+    // therefore if the first did not find a corresponding node, we try the other version
+    if bedeutungs_node.is_none() {
+        let bedeutungs_node_predicate = Name("div").and(Attr("id", "bedeutungen"));
+        bedeutungs_node = doc.find(bedeutungs_node_predicate).next();
+
+        if bedeutungs_node.is_none() {
+            return Err("Scraping error while searching for bedeutungs node: \"div\" element with id \"bedeutung(en)\" not found".to_string());
+        }
+    }
+
+    Ok(bedeutungs_node.unwrap())
+}
