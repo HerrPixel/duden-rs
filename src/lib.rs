@@ -9,14 +9,14 @@ use select::{
 
 /// A single Wort together with a list of Bedeutungen and matching Beispiele.
 pub struct Wort {
-    wort: String,
-    bedeutungen: Vec<Bedeutung>,
+    pub wort: String,
+    pub bedeutungen: Vec<Bedeutung>,
 }
 
 /// A single Bedeutung for a Wort. May have a list of Beispiele.
 pub struct Bedeutung {
-    bedeutung: String,
-    beispiele: Vec<String>,
+    pub bedeutung: String,
+    pub beispiele: Vec<String>,
 }
 
 impl fmt::Display for Wort {
