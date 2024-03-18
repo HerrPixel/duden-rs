@@ -2,7 +2,8 @@ use core::fmt;
 
 use select::{
     document::Document,
-    predicate::{Attr, Class, Name, Predicate},
+    node::Node,
+    predicate::{Any, Attr, Child, Class, Descendant, Name, Not, Predicate},
 };
 
 pub struct Wort {
