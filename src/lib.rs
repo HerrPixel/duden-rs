@@ -171,3 +171,45 @@ fn get_bedeutungs_node_from_document(doc: &Document) -> Result<Node, String> {
 
     Ok(bedeutungs_node.unwrap())
 }
+
+/// Get a list of list of beispiele for the given Wort.
+/// Each list of beispiele corresponds to one bedeutung given by `get_bedeutungen_from_node`.
+/// The argument `node` should be the bedeutungs node given by the function `get_bedeutungs_node_from_document`.
+fn get_beispiele_from_node(node: &Node) -> Result<Vec<Vec<String>>, String> {
+    // Every beispiel list is a definition list.
+    let beispiel_list_selector = Name("dl");
+
+    // But not every definition list is a beispiel list, only if the title of that list is "Beispiel(e)".
+    // Therefore we extract the title first (given by a definition term element),
+    // and test if it is either "Beispiel" or "Beispiele".
+    let list_title_selector = Child(Name("dl"), Name("dt"));
+
+    // Finally, every beispiel is then found in a list item element
+    let beispiel_selector = Descendant(Name("dl"), Name("li"));
+
+    let mut extracted_beispiele = Vec::new();
+
+    for beispiel_list in node.find(beispiel_list_selector) {
+        let list_title = beispiel_list.find(list_title_selector).next();
+
+        if list_title.is_none() {
+            continue;
+        }
+
+        // the list could be a "Sprichwörter" or "Redewendungen" list, we are not interested in those.
+        if list_title.unwrap().text() != "Beispiel" && list_title.unwrap().text() != "Beispiele" {
+            continue;
+        }
+
+        let mut beispiele_of_current_list = Vec::new();
+
+        // extracting the text from list item descendants yields the beispiele.
+        for beispiel in beispiel_list.find(beispiel_selector) {
+            beispiele_of_current_list.push(beispiel.text());
+        }
+
+        extracted_beispiele.push(beispiele_of_current_list);
+    }
+
+    Ok(extracted_beispiele)
+}
