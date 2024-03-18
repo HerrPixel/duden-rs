@@ -45,7 +45,7 @@ async fn main() -> Result<(), String> {
 }
 ```
 
-### Accessing bedeutungen and beispiele
+### Accessing Bedeutungen and Beispiele
 
 ```rust
 use duden_rs_lib::get_wort;
