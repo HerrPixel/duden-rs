@@ -213,3 +213,36 @@ fn get_beispiele_from_node(node: &Node) -> Result<Vec<Vec<String>>, String> {
 
     Ok(extracted_beispiele)
 }
+
+/// Get a list of bedeutungen for the given Wort.
+/// The argument `node` should be the bedeutungs node given by the function `get_bedeutungs_node_from_document`.
+fn get_bedeutungen_from_node(node: &Node) -> Result<Vec<String>, String> {
+    // We ignore every other element that is not related to a bedeutung
+    // The HTML-tree can be very complicated but every non-related element is a descendant of these elements,
+    // so we can filter for those
+    let non_predicate = Not(Name("figcaption")
+        .or(Name("header"))
+        .or(Name("dl"))
+        .descendant(Any));
+
+    let bedeutung_text_fragments = node.find(non_predicate);
+
+    // now we can extract the remaining text of the relevant nodes
+    let bedeutungs_text = bedeutung_text_fragments
+        .map(|n| n.as_text().unwrap_or(""))
+        .collect::<Vec<&str>>()
+        .join(" ");
+
+    // finally, every bedeutung is a continuos slice of text without linebreaks,
+    // so we can split at newline characters to get the bedeutungen.
+    // since there is a lot of empty text in between like whitespace and linebreaks,
+    // we filter those irrelevant elements.
+    let bedeutungen = bedeutungs_text
+        .split('\n')
+        .map(|s| s.trim())
+        .filter(|s| !s.is_empty())
+        .map(|s| s.to_string())
+        .collect::<Vec<String>>();
+
+    Ok(bedeutungen)
+}
