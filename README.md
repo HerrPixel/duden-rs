@@ -22,6 +22,9 @@ use duden_rs_lib::get_wort;
 
 #[tokio::main]
 async fn main() -> Result<(), String> {
+    // Note that the argument needs to be the URL suffix for that word.
+    // For example for the word "sit venia verbo", you would need to query "sit_venia_verbo",
+    // since the corresponding duden page is https://www.duden.de/rechtschreibung/sit_venia_verbo.
     let wort = get_wort("Apfel").await?;
 
     println!("{}",wort);
