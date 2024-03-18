@@ -1,3 +1,5 @@
+use core::fmt;
+
 use select::{
     document::Document,
     predicate::{Attr, Class, Name, Predicate},
@@ -10,6 +12,21 @@ pub struct Wort {
 pub struct Bedeutung {
     bedeutung: String,
     beispiele: Vec<String>,
+}
+
+impl fmt::Display for Wort {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        writeln!(f, "Wort: {}", self.wort)?;
+        writeln!(f, "Bedeutung(en):")?;
+        for bedeutung in &self.bedeutungen {
+            writeln!(f, "    {}", bedeutung.bedeutung)?;
+            writeln!(f, "    Beispiel(e):")?;
+            for beispiel in &bedeutung.beispiele {
+                writeln!(f, "        {}", beispiel)?;
+            }
+        }
+        Ok(())
+    }
 }
 
 /*
