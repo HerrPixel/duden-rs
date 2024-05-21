@@ -243,6 +243,7 @@ fn get_bedeutungen_from_node(node: &Node) -> Result<Vec<String>, String> {
     let non_predicate = Not(Name("figcaption")
         .or(Name("header"))
         .or(Name("dl"))
+        .or(Class("special-note"))
         .descendant(Any));
 
     let bedeutung_text_fragments = node.find(non_predicate);
