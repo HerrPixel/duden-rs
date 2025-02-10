@@ -163,10 +163,12 @@ fn get_wort_from_document(doc: &Document) -> Result<String, String> {
             ),
         };
 
-    let wort = match wort_node.attr("content") {
+    let mut wort = match wort_node.attr("content") {
         Some(value) => value,
         None => return Err("Scraping error while searching for Wort attribute on meta tag: meta tag does not have attribute \"content\"".to_string()),
     };
+
+    wort = wort.split(" |").next().unwrap_or(wort);
 
     Ok(wort.to_string())
 }
