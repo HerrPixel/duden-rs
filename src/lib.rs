@@ -168,7 +168,13 @@ fn get_wort_from_document(doc: &Document) -> Result<String, String> {
         None => return Err("Scraping error while searching for Wort attribute on meta tag: meta tag does not have attribute \"content\"".to_string()),
     };
 
-    wort = wort.split(" |").next().unwrap_or(wort);
+    // Could also use find() and get()
+
+    // Remove Suffix after ▶
+    wort = wort.split_once(" ▶").unwrap_or((wort, "")).0;
+
+    // Remove Suffix after |
+    wort = wort.split_once(" |").unwrap_or((wort, "")).0;
 
     Ok(wort.to_string())
 }
